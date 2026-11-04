@@ -31,15 +31,18 @@
   <h2>2. Datos que tratamos</h2>
   <table>
     <tr><th>Quién</th><th>Datos</th></tr>
-    <tr><td>Clientes</td><td>Nombre de perfil de WhatsApp, número de teléfono, barrio, ubicación compartida y datos del servicio solicitado.</td></tr>
+    <tr><td>Clientes</td><td>Nombre de perfil de WhatsApp, número de teléfono, barrio, dirección, ubicación compartida, datos del servicio o pedido solicitado y forma de pago.</td></tr>
     <tr><td>Transportadores</td><td>Nombre, correo, teléfono, placa, estado de verificación, datos de los servicios y ubicación durante un servicio activo.</td></tr>
-    <tr><td>Comercios</td><td>Nombre del comercio, dirección y teléfono de contacto.</td></tr>
+    <tr><td>Comercios</td><td>Nombre del comercio, dirección, teléfono de contacto, menú y datos para recibir pagos.</td></tr>
   </table>
-  <p>El bot lee tus mensajes para atender la solicitud, pero no guardamos el texto de esa conversación en nuestra base de datos. Solo guardamos los datos necesarios para el servicio.</p>
+  <p>El bot lee tus mensajes para atender la solicitud. En Hazme un Fa y Llévame no guardamos el texto de la conversación en nuestra base de datos, solo los datos necesarios para el servicio.</p>
+  <p>En los domicilios guardamos temporalmente tus últimos mensajes para entender lo que pides. Los borramos cuando el pedido termina o se cancela, o unas 2 horas después si dejas de escribir sin confirmarlo. El comprobante de pago que envías queda en la conversación de WhatsApp con el comercio; en nuestra base solo registramos que lo recibimos.</p>
+  <p>Si ocurre una falla técnica, el mensaje que la produjo puede quedar por un tiempo limitado en el registro de esa falla.</p>
 
   <h2>3. Para qué los usamos</h2>
   <ul>
     <li>Recibir tu solicitud y buscar un transportador disponible.</li>
+    <li>Entender tu pedido a domicilio con ayuda de inteligencia artificial. El precio y la disponibilidad siempre salen del menú del comercio, y puedes revisar el resumen antes de confirmar.</li>
     <li>Poner en contacto al cliente y al transportador que acepta el servicio.</li>
     <li>Enviar avisos sobre el estado del servicio.</li>
     <li>Dar seguridad y soporte durante el servicio, y atender reclamos.</li>
@@ -48,13 +51,16 @@
   <p>No vendemos tus datos ni los usamos para publicidad de terceros.</p>
 
   <h2>4. Autorización</h2>
-  <p>Antes de elegir un servicio, el bot te informa este uso. Al elegir una opción autorizas el tratamiento y dejamos registro de la fecha. Si no estás de acuerdo, no continúes la conversación.</p>
+  <p>En tu primer contacto, el bot te informa este uso antes de atender tu solicitud. Al continuar la conversación autorizas el tratamiento y dejamos registro de la fecha. Si no estás de acuerdo, no continúes la conversación.</p>
 
   <h2>5. Con quién los compartimos</h2>
   <ul>
     <li><strong>Transportador que acepta tu servicio:</strong> recibe tu nombre, teléfono, barrio y ubicación. Antes de aceptar, solo puede ver el tipo de servicio y el barrio.</li>
-    <li><strong>Cliente del servicio:</strong> recibe el nombre, el teléfono y la placa del transportador asignado.</li>
-    <li><strong>Proveedores tecnológicos:</strong> Meta (WhatsApp), Supabase (base de datos), n8n (automatización), Sentry (registro de errores) y GitHub (copias de seguridad cifradas). Pueden procesar los datos fuera de Colombia, incluso en Estados Unidos.</li>
+    <li><strong>Comercio al que le pides a domicilio:</strong> recibe tu nombre, teléfono, dirección y pedido para atenderlo.</li>
+    <li><strong>Domiciliario que acepta tu pedido:</strong> recibe los datos necesarios para recogerlo y entregarlo.</li>
+    <li><strong>Cliente del servicio o del domicilio:</strong> recibe el nombre, el teléfono y la placa del transportador o domiciliario asignado.</li>
+    <li><strong>Proveedores tecnológicos:</strong> Meta (WhatsApp), Supabase (base de datos), n8n (automatización), Anthropic (inteligencia artificial), Sentry (registro de errores) y GitHub (copias de seguridad cifradas). Pueden procesar los datos fuera de Colombia, incluso en Estados Unidos.</li>
+    <li><strong>Sobre Anthropic:</strong> al pedir a domicilio, recibe tu mensaje, tus mensajes recientes, tu pedido y el menú del comercio. No le enviamos tu nombre ni tu teléfono; evita escribir datos personales al describir tu pedido.</li>
     <li><strong>Autoridades:</strong> cuando la ley lo exija.</li>
   </ul>
 
