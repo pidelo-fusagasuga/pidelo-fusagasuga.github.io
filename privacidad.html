@@ -31,8 +31,8 @@
   <h2>2. Datos que tratamos</h2>
   <table>
     <tr><th>Quién</th><th>Datos</th></tr>
-    <tr><td>Clientes</td><td>Nombre de perfil de WhatsApp, número de teléfono, barrio, dirección, ubicación compartida, datos del servicio o pedido solicitado y forma de pago.</td></tr>
-    <tr><td>Transportadores</td><td>Nombre, correo, teléfono, placa, estado de verificación, datos de los servicios y ubicación durante un servicio activo.</td></tr>
+    <tr><td>Clientes</td><td>Nombre de perfil de WhatsApp, número de teléfono, barrio, dirección, ubicación compartida, datos del servicio o pedido solicitado, forma de pago y las calificaciones que das.</td></tr>
+    <tr><td>Transportadores</td><td>Nombre, correo, teléfono, placa, contacto de emergencia, estado de verificación, datos de los servicios y ubicación durante un servicio activo. También copias de sus documentos: cédula, licencia, SOAT, revisión técnico-mecánica, tarjeta de propiedad y antecedentes, si los entrega.</td></tr>
     <tr><td>Comercios</td><td>Nombre del comercio, dirección, teléfono de contacto, menú y datos para recibir pagos.</td></tr>
   </table>
   <p>El bot lee tus mensajes para atender la solicitud. En Hazme un Fa y Llévame no guardamos el texto de la conversación en nuestra base de datos, solo los datos necesarios para el servicio.</p>
@@ -46,6 +46,7 @@
     <li>Poner en contacto al cliente y al transportador que acepta el servicio.</li>
     <li>Enviar avisos sobre el estado del servicio.</li>
     <li>Dar seguridad y soporte durante el servicio, y atender reclamos.</li>
+    <li>Verificar la identidad y los documentos de los transportadores antes de habilitarlos.</li>
     <li>Detectar errores y usos indebidos, y cumplir obligaciones legales.</li>
   </ul>
   <p>No vendemos tus datos ni los usamos para publicidad de terceros.</p>
@@ -56,7 +57,7 @@
   <h2>5. Con quién los compartimos</h2>
   <ul>
     <li><strong>Transportador que acepta tu servicio:</strong> recibe tu nombre, teléfono, barrio y ubicación. Antes de aceptar, solo puede ver el tipo de servicio y el barrio.</li>
-    <li><strong>Comercio al que le pides a domicilio:</strong> recibe tu nombre, teléfono, dirección y pedido para atenderlo.</li>
+    <li><strong>Comercio al que le pides a domicilio:</strong> recibe tu nombre, teléfono, dirección y pedido para atenderlo, y tus datos de contacto si pides hablar con una persona. Solo le mostramos tus calificaciones como promedios.</li>
     <li><strong>Domiciliario que acepta tu pedido:</strong> recibe los datos necesarios para recogerlo y entregarlo.</li>
     <li><strong>Cliente del servicio o del domicilio:</strong> recibe el nombre, el teléfono y la placa del transportador o domiciliario asignado.</li>
     <li><strong>Proveedores tecnológicos:</strong> Meta (WhatsApp), Supabase (base de datos), n8n (automatización), Anthropic (inteligencia artificial), Sentry (registro de errores) y GitHub (copias de seguridad cifradas). Pueden procesar los datos fuera de Colombia, incluso en Estados Unidos.</li>
@@ -69,6 +70,7 @@
     <li><strong>Tu ubicación exacta en Hazme un Fa y Llévame:</strong> la borramos automáticamente unas 48 horas después de cerrar el servicio.</li>
     <li><strong>Ubicación del transportador durante la ruta:</strong> se borra automáticamente según nuestra política de seguridad, normalmente a las 48 horas, salvo que haya un caso de soporte o seguridad registrado.</li>
     <li><strong>Datos del servicio y de contacto:</strong> el tiempo necesario para prestar el servicio, atender reclamos y cumplir obligaciones legales.</li>
+    <li><strong>Documentos de los transportadores:</strong> mientras trabaje con Pídelo y el tiempo necesario después para atender reclamos o cumplir obligaciones legales. Solo los pueden abrir los administradores, y cada apertura queda registrada.</li>
     <li><strong>Copias de seguridad cifradas:</strong> hasta 30 días.</li>
   </ul>
 
