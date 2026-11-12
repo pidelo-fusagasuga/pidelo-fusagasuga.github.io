@@ -3,19 +3,42 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Documentos de Pídelo</title>
+<title>Pídelo Soluciones</title>
 <style>
   :root { color-scheme: light dark; --bg: #f8f7f2; --ink: #191a17; --accent: #02213e; }
   @media (prefers-color-scheme: dark) { :root { --bg: #10151a; --ink: #eceae2; --accent: #8fc7ff; } }
   body { background: var(--bg); color: var(--ink); font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; }
   main { margin: 0 auto; max-width: 720px; padding: 40px 20px; }
-  h1 { color: var(--accent); }
+  h1, h2 { color: var(--accent); }
   a { color: var(--accent); }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0; }
+  dt { font-weight: 600; }
+  dd { margin: 0; }
+  @media (max-width: 480px) { dl { grid-template-columns: 1fr; gap: 0; } dd { margin-bottom: 10px; } }
 </style>
 </head>
 <body>
 <main>
-  <h1>Documentos de Pídelo</h1>
+  <h1>Pídelo Soluciones</h1>
+  <p>Pídelo conecta en Fusagasugá a clientes, comercios y transportadores por WhatsApp: domicilios, favores y servicios de los comercios de la ciudad.</p>
+
+  <h2>Datos del negocio</h2>
+  <dl>
+    <dt>Establecimiento</dt>
+    <dd>Pídelo Soluciones, matriculado en la Cámara de Comercio de Bogotá</dd>
+    <dt>Propietario</dt>
+    <dd>Andres Mauricio Diaz Garcia, persona natural</dd>
+    <dt>Dirección</dt>
+    <dd>Calle 21 # 60-64, Fusagasugá, Cundinamarca 252211, Colombia</dd>
+    <dt>Teléfono</dt>
+    <dd><a href="tel:+573212288177">+57 321 228 8177</a></dd>
+    <dt>WhatsApp de soporte</dt>
+    <dd><a href="https://wa.me/573203934838">320 393 4838</a></dd>
+    <dt>Correo</dt>
+    <dd><a href="mailto:pidelo.fusagasuga@gmail.com">pidelo.fusagasuga@gmail.com</a></dd>
+  </dl>
+
+  <h2>Documentos</h2>
   <ul>
     <li><a href="privacidad.html">Política de privacidad</a></li>
     <li><a href="terminos.html">Términos</a></li>
