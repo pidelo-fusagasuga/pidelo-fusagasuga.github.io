@@ -21,7 +21,7 @@
 <body>
 <main>
   <h1>Política de privacidad de Pídelo</h1>
-  <p class="date">Vigente desde el 4 de noviembre de 2026 · Actualizada el 12 de noviembre de 2026</p>
+  <p class="date">Vigente desde el 4 de noviembre de 2026 · Actualizada el 15 de noviembre de 2026</p>
 
   <p>Pídelo conecta en Fusagasugá a clientes, comercios y transportadores por WhatsApp y por la app para transportadores. Esta política explica qué datos personales tratamos, para qué y qué derechos tienes, conforme a la Ley 1581 de 2012 de Colombia y sus normas reglamentarias.</p>
 
@@ -31,12 +31,13 @@
   <h2>2. Datos que tratamos</h2>
   <table>
     <tr><th>Quién</th><th>Datos</th></tr>
-    <tr><td>Clientes</td><td>Nombre de perfil de WhatsApp, número de teléfono, barrio, dirección, ubicación compartida, datos del servicio o pedido solicitado, forma de pago y las calificaciones que das.</td></tr>
+    <tr><td>Clientes</td><td>Nombre de perfil de WhatsApp, número de teléfono, barrio, dirección, ubicación compartida, datos del servicio o pedido solicitado, forma de pago, las calificaciones que das y las notas de voz que envías al bot de un comercio.</td></tr>
     <tr><td>Transportadores</td><td>Nombre, correo, teléfono, placa, contacto de emergencia, estado de verificación, datos de los servicios y ubicación durante un servicio activo. También copias de sus documentos: cédula, licencia, SOAT, revisión técnico-mecánica, tarjeta de propiedad y antecedentes, si los entrega.</td></tr>
     <tr><td>Comercios</td><td>Nombre del comercio, dirección, teléfono de contacto, menú y datos para recibir pagos. De la persona que maneja la cuenta: nombre, correo y celular.</td></tr>
   </table>
   <p>El bot lee tus mensajes para atender la solicitud. En Favores y Pasa por mí no guardamos el texto de la conversación en nuestra base de datos, solo los datos necesarios para el servicio.</p>
   <p>En los domicilios guardamos temporalmente tus últimos mensajes para entender lo que pides. Los borramos cuando el pedido termina o se cancela, o unas 2 horas después si dejas de escribir sin confirmarlo. El comprobante de pago que envías queda en la conversación de WhatsApp con el comercio; en nuestra base solo registramos que lo recibimos.</p>
+  <p>Si le mandas una nota de voz al bot de un comercio para pedir a domicilio, la convertimos a texto con un proveedor de voz a texto y el bot te muestra lo que entendió para que lo puedas corregir. Ese texto se trata igual que un mensaje escrito. No guardamos el audio: lo usamos solo para convertirlo a texto y lo descartamos. En nuestra base solo anotamos cuándo llegó, cuánto duró y si se pudo entender, para controlar el uso y el costo, y lo borramos a los 90 días.</p>
   <p>Si ocurre una falla técnica, el mensaje que la produjo puede quedar por un tiempo limitado en el registro de esa falla.</p>
   <p>En las apps Pídelo Comercio y Pídelo Conductor también tratamos los datos para entrar (correo y contraseña, que se guarda cifrada), un identificador del celular para enviarte notificaciones y los registros de fallas de la app. Pídelo Conductor usa tu ubicación precisa solo mientras tienes un servicio activo, también con la app en segundo plano, y lo indica con una notificación visible todo ese tiempo. Si activas la huella o Face ID, tu contraseña queda guardada cifrada solo en tu celular.</p>
 
@@ -61,8 +62,9 @@
     <li><strong>Comercio al que le pides a domicilio:</strong> recibe tu nombre, teléfono, dirección y pedido para atenderlo, y tus datos de contacto si pides hablar con una persona. Solo le mostramos tus calificaciones como promedios.</li>
     <li><strong>Domiciliario que acepta tu pedido:</strong> recibe los datos necesarios para recogerlo y entregarlo.</li>
     <li><strong>Cliente del servicio o del domicilio:</strong> recibe el nombre, el teléfono y la placa del transportador o domiciliario asignado.</li>
-    <li><strong>Proveedores tecnológicos:</strong> Meta (WhatsApp), Supabase (base de datos), n8n (automatización), Anthropic (inteligencia artificial), Sentry (registro de errores), Expo y Google Firebase (notificaciones en el celular) y GitHub (copias de seguridad cifradas). Pueden procesar los datos fuera de Colombia, incluso en Estados Unidos.</li>
+    <li><strong>Proveedores tecnológicos:</strong> Meta (WhatsApp), Supabase (base de datos), n8n (automatización), Anthropic (inteligencia artificial), Groq (convertir notas de voz a texto), Sentry (registro de errores), Expo y Google Firebase (notificaciones en el celular) y GitHub (copias de seguridad cifradas). Pueden procesar los datos fuera de Colombia, incluso en Estados Unidos.</li>
     <li><strong>Sobre Anthropic:</strong> al pedir a domicilio, recibe tu mensaje, tus mensajes recientes, tu pedido y el menú del comercio. No le enviamos tu nombre ni tu teléfono; evita escribir datos personales al describir tu pedido.</li>
+    <li><strong>Sobre Groq:</strong> si le mandas una nota de voz al bot de un comercio, recibe solo el audio y el nombre del comercio con su menú, para entenderlo mejor. No le enviamos tu nombre ni tu teléfono, y lo tenemos configurado para que no guarde los audios.</li>
     <li><strong>Autoridades:</strong> cuando la ley lo exija.</li>
   </ul>
 
@@ -72,6 +74,7 @@
     <li><strong>Ubicación del transportador durante la ruta:</strong> se borra automáticamente según nuestra política de seguridad, normalmente a las 48 horas, salvo que haya un caso de soporte o seguridad registrado.</li>
     <li><strong>Datos del servicio y de contacto:</strong> el tiempo necesario para prestar el servicio, atender reclamos y cumplir obligaciones legales.</li>
     <li><strong>Documentos de los transportadores:</strong> mientras trabaje con Pídelo y el tiempo necesario después para atender reclamos o cumplir obligaciones legales. Solo los pueden abrir los administradores, y cada apertura queda registrada.</li>
+    <li><strong>Notas de voz:</strong> el audio no se guarda. Si ocurre una falla técnica justo al procesarlo, puede quedar por un tiempo limitado en el registro de esa falla.</li>
     <li><strong>Copias de seguridad cifradas:</strong> hasta 30 días.</li>
   </ul>
 
