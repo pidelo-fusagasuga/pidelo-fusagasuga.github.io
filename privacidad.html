@@ -33,6 +33,7 @@
     <tr><th>Quién</th><th>Datos</th></tr>
     <tr><td>Clientes</td><td>Nombre de perfil de WhatsApp, número de teléfono, barrio, dirección, ubicación compartida, datos del servicio o pedido solicitado, forma de pago, las calificaciones que das y las notas de voz que envías al bot de un comercio.</td></tr>
     <tr><td>Personas que agendan una cita por el link de un negocio</td><td>Nombre, celular, servicio, día y hora de la cita, la nota que quieras dejar, si la cita se cumplió o se canceló, y la dirección IP desde la que agendas.</td></tr>
+    <tr><td>Personas que atienden citas en un negocio (barberos, estilistas)</td><td>El nombre que escribe el negocio, los días y horas en que atienden, las horas bloqueadas con su motivo, si el negocio lo escribe, y las citas que les asignan.</td></tr>
     <tr><td>Transportadores</td><td>Nombre, correo, teléfono, placa, contacto de emergencia, estado de verificación, datos de los servicios y ubicación durante un servicio activo. También copias de sus documentos: cédula, licencia, SOAT, revisión técnico-mecánica, tarjeta de propiedad y antecedentes, si los entrega.</td></tr>
     <tr><td>Comercios</td><td>Nombre del comercio, dirección, teléfono de contacto, menú y datos para recibir pagos. De la persona que maneja la cuenta: nombre, correo y celular.</td></tr>
   </table>
@@ -48,6 +49,7 @@
     <li>Recibir tu solicitud y buscar un transportador disponible.</li>
     <li>Entender tu pedido a domicilio con ayuda de inteligencia artificial. El precio y la disponibilidad siempre salen del menú del comercio, y puedes revisar el resumen antes de confirmar.</li>
     <li>Guardar tu cita, mostrársela al negocio, permitir que la veas o la canceles y, si el negocio tiene conectado su WhatsApp con Pídelo, enviarte avisos y un recordatorio.</li>
+    <li>Mostrarle al cliente con quién puede agendar y organizar las citas de cada persona que atiende.</li>
     <li>Poner en contacto al cliente y al transportador que acepta el servicio.</li>
     <li>Enviar avisos sobre el estado del servicio.</li>
     <li>Dar seguridad y soporte durante el servicio, y atender reclamos.</li>
@@ -59,12 +61,14 @@
   <h2>4. Autorización</h2>
   <p>En tu primer contacto, el bot te informa este uso antes de atender tu solicitud. Al continuar la conversación autorizas el tratamiento y dejamos registro de la fecha. Si no estás de acuerdo, no continúes la conversación.</p>
   <p>Si agendas por el link de un negocio, la página te informa este uso junto al botón de agendar. Al tocarlo autorizas el tratamiento, y la fecha en que se guarda la cita queda como registro. Si no estás de acuerdo, no agendes por la página y escríbele al negocio.</p>
+  <p>Si atiendes citas en un negocio, es el negocio quien escribe tu nombre y tu horario. Antes de hacerlo debe contarte este uso y pedirte permiso. No debe escribir datos de salud ni otra información delicada como motivo de tus horas bloqueadas.</p>
 
   <h2>5. Con quién los compartimos</h2>
   <ul>
     <li><strong>Transportador que acepta tu servicio:</strong> recibe tu nombre, teléfono, barrio y ubicación. Antes de aceptar, solo puede ver el tipo de servicio y el barrio.</li>
     <li><strong>Comercio al que le pides a domicilio:</strong> recibe tu nombre, teléfono, dirección y pedido para atenderlo, y tus datos de contacto si pides hablar con una persona. Solo le mostramos tus calificaciones como promedios.</li>
     <li><strong>Negocio con el que agendas una cita:</strong> recibe tu nombre, celular, servicio, día, hora y nota para atenderte. Puede ver sus citas en la app Pídelo Comercio y en su calendario de Google o de Apple, y responde por el uso que haga de tus datos.</li>
+    <li><strong>Si atiendes citas en un negocio:</strong> tu nombre y tus horas libres los puede ver cualquier persona que abra el link del negocio, y tu nombre sale en la confirmación de la cita. El motivo de tus horas bloqueadas solo lo ve el negocio en su app.</li>
     <li><strong>Domiciliario que acepta tu pedido:</strong> recibe los datos necesarios para recogerlo y entregarlo.</li>
     <li><strong>Cliente del servicio o del domicilio:</strong> recibe el nombre, el teléfono y la placa del transportador o domiciliario asignado.</li>
     <li><strong>Proveedores tecnológicos:</strong> Meta (WhatsApp), Supabase (base de datos), n8n (automatización), Anthropic (inteligencia artificial), Groq (convertir notas de voz a texto), Sentry (registro de errores), Expo y Google Firebase (notificaciones en el celular) y GitHub (copias de seguridad cifradas y alojamiento de nuestras páginas). La página de citas usa letras de Google Fonts, que recibe la dirección IP de quien la abre. Pueden procesar los datos fuera de Colombia, incluso en Estados Unidos.</li>
@@ -79,6 +83,7 @@
     <li><strong>Ubicación del transportador durante la ruta:</strong> se borra automáticamente según nuestra política de seguridad, normalmente a las 48 horas, salvo que haya un caso de soporte o seguridad registrado.</li>
     <li><strong>Datos del servicio y de contacto:</strong> el tiempo necesario para prestar el servicio, atender reclamos y cumplir obligaciones legales.</li>
     <li><strong>Citas agendadas por el link:</strong> el tiempo necesario para atenderte, llevar el historial del negocio, atender reclamos y cumplir obligaciones legales. Puedes pedirnos que borremos tus datos antes.</li>
+    <li><strong>Nombre y horario de quienes atienden citas:</strong> mientras el negocio los tenga en su agenda. Si el negocio te apaga, tu nombre deja de salir en el link, pero queda en el historial de las citas. Puedes pedirnos que lo borremos, también si el negocio elimina su cuenta.</li>
     <li><strong>Dirección IP desde la que agendas:</strong> la borramos automáticamente unos 2 días después.</li>
     <li><strong>Documentos de los transportadores:</strong> mientras trabaje con Pídelo y el tiempo necesario después para atender reclamos o cumplir obligaciones legales. Solo los pueden abrir los administradores, y cada apertura queda registrada.</li>
     <li><strong>Notas de voz:</strong> el audio no se guarda. Si ocurre una falla técnica justo al procesarlo, puede quedar por un tiempo limitado en el registro de esa falla.</li>
