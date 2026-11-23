@@ -48,18 +48,28 @@
   .svc .meta { color: var(--muted); font-size: 13px; }
   .svc .price { margin-left: auto; font-weight: 800; color: var(--navy); white-space: nowrap; }
 
-  .days { display: flex; gap: 8px; overflow-x: auto; margin: 14px -18px 0; padding: 2px 18px 6px; scroll-snap-type: x proximity; scroll-padding-inline: 18px; }
-  .day { flex: none; scroll-snap-align: start; width: 66px; border: 2px solid var(--line); background: #fff; border-radius: 14px; padding: 8px 0; cursor: pointer; text-align: center; }
-  .day .wd { font-size: 12px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
-  .day .dn { font-size: 22px; font-weight: 800; color: var(--navy); line-height: 1.1; }
-  .day .mo { font-size: 12px; color: var(--muted); }
-  .day[aria-pressed="true"] { border-color: var(--orange); background: var(--orange-soft); }
+  .cal { margin-top: 14px; }
+  .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .cal-head b { font-size: 17px; font-weight: 800; color: var(--navy); }
+  .cal-nav { width: 44px; height: 44px; border: 2px solid var(--line); border-radius: 12px; background: #fff; color: var(--navy); font-size: 20px; line-height: 1; cursor: pointer; }
+  .cal-nav:disabled { opacity: .3; cursor: default; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
+  .cal-wd { text-align: center; font-size: 12px; font-weight: 700; color: var(--muted); padding: 4px 0; }
+  .cd { height: 44px; border: 2px solid transparent; border-radius: 12px; background: transparent; color: #6b7686; font-size: 16px; font-weight: 500; padding: 0; }
+  .cd.free { background: var(--green-soft); color: var(--green); font-weight: 800; cursor: pointer; }
+  .cd.free:hover { border-color: var(--green); }
+  .cd.today { border-color: var(--line); }
+  .cd.free[aria-pressed="true"] { background: var(--orange); border-color: var(--orange); color: var(--navy); }
+  .cal-key { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; color: var(--muted); font-size: 13px; }
+  .cal-key span { display: inline-flex; align-items: center; gap: 6px; }
+  .cal-key i { width: 14px; height: 14px; border-radius: 4px; background: var(--green-soft); border: 1px solid #9fd8b5; }
+  .cal-key i.sel { background: var(--orange); border-color: var(--orange); }
 
   .part { font-size: 13px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin: 14px 0 8px; }
   .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
   .slot { border: 2px solid var(--line); background: #fff; border-radius: 12px; padding: 9px 4px; font-weight: 700; cursor: pointer; font-size: 15px; }
   .slot[aria-pressed="true"] { border-color: var(--orange); background: var(--orange-soft); }
-  .day:focus-visible, .slot:focus-visible { outline: 3px solid rgba(254,118,2,.4); outline-offset: 1px; }
+  .cd:focus-visible, .cal-nav:focus-visible, .slot:focus-visible { outline: 3px solid rgba(254,118,2,.4); outline-offset: 1px; }
 
   label { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
   label small { color: var(--muted); font-weight: 500; }
@@ -128,8 +138,8 @@
   const API = 'https://resyzmxhmpjpkpazmxtc.supabase.co/rest/v1/rpc/';
   const KEY = 'sb_publishable_Aumffutfaia2UZLdpkni1w_bgi9RBMa';
   const STORE = 'pidelo_mis_citas';
-  const WD = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-  const MO = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  const WD = [['L', 'lunes'], ['M', 'martes'], ['M', 'miércoles'], ['J', 'jueves'], ['V', 'viernes'], ['S', 'sábado'], ['D', 'domingo']];
+  const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
   const PARTS = { manana: 'Mañana', tarde: 'Tarde', noche: 'Noche' };
 
   const app = document.getElementById('app');
@@ -178,10 +188,42 @@
     app.innerHTML = `<div class="card center"><div class="done-icon ${cls}">${icon}</div><h2>${esc(title)}</h2><p class="hint">${esc(text)}</p></div>`;
   }
 
-  function dayChip(iso) {
-    const [y, m, d] = iso.split('-').map(Number);
-    const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
-    return { wd: WD[wd], dn: d, mo: MO[m - 1] };
+  const pad = (n) => String(n).padStart(2, '0');
+  const todayBogota = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+
+  // Un mes completo, de lunes a domingo. Solo se pueden tocar los días con cupo.
+  function calendarHtml(days, month, selected) {
+    const free = new Map(days.map((d) => [d.day, d]));
+    const [y, m] = month.split('-').map(Number);
+    const blanks = (new Date(Date.UTC(y, m - 1, 1)).getUTCDay() + 6) % 7;
+    const total = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    const today = todayBogota();
+    let cells = '<span></span>'.repeat(blanks);
+    for (let n = 1; n <= total; n++) {
+      const iso = `${y}-${pad(m)}-${pad(n)}`;
+      const d = free.get(iso);
+      const cls = `cd${d ? ' free' : ''}${iso === today ? ' today' : ''}`;
+      const mark = iso === today ? ' aria-current="date"' : '';
+      cells += d
+        ? `<button type="button" class="${cls}" data-day="${iso}"${mark} aria-pressed="${selected === iso}" aria-label="${esc(d.label)}">${n}</button>`
+        : `<button type="button" class="${cls}" disabled${mark} aria-label="${n} de ${MONTHS[m - 1]}, sin cupo">${n}</button>`;
+    }
+    const months = [...new Set(days.map((d) => d.day.slice(0, 7)))].sort();
+    return `<div class="cal">
+      <div class="cal-head">
+        <button type="button" class="cal-nav" data-go="-1" aria-label="Mes anterior"${month <= months[0] ? ' disabled' : ''}>‹</button>
+        <b aria-live="polite">${MONTHS[m - 1].charAt(0).toUpperCase() + MONTHS[m - 1].slice(1)} ${y}</b>
+        <button type="button" class="cal-nav" data-go="1" aria-label="Mes siguiente"${month >= months[months.length - 1] ? ' disabled' : ''}>›</button>
+      </div>
+      <div class="cal-grid">${WD.map(([a, b]) => `<div class="cal-wd"><abbr title="${b}" style="text-decoration:none">${a}</abbr></div>`).join('')}${cells}</div>
+      <div class="cal-key"><span><i></i>Con cupo</span><span><i class="sel"></i>Tu día</span></div>
+    </div>`;
+  }
+
+  function moveMonth(month, by) {
+    const [y, m] = month.split('-').map(Number);
+    const d = new Date(Date.UTC(y, m - 1 + by, 1));
+    return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}`;
   }
 
   function waLink(phone, text) {
@@ -296,7 +338,7 @@
       return;
     }
 
-    const st = { service: null, day: null, slot: null, days: [], slots: [] };
+    const st = { service: null, day: null, slot: null, days: [], slots: [], month: null };
 
     // Cita guardada en este celular para este negocio.
     let banner = '';
@@ -340,10 +382,19 @@
         if (st.days === 'loading') body = '<div class="loading"><span class="spin"></span>Buscando días libres…</div>';
         else if (st.days && st.days.error) body = `<div class="err">${esc(st.days.error)}</div>`;
         else if (!st.days.length) body = `<p class="empty">No hay días libres para este servicio en las próximas semanas. Escríbele al negocio.</p>`;
-        else body = `<div class="days">${st.days.map((d) => { const c = dayChip(d.day); return `
-          <button class="day" data-day="${d.day}" aria-pressed="${st.day && st.day.day === d.day}" title="${esc(d.label)}"><div class="wd">${c.wd}</div><div class="dn">${c.dn}</div><div class="mo">${c.mo}</div></button>`; }).join('')}</div>`;
+        else body = calendarHtml(st.days, st.month, st.day && st.day.day);
         c2.innerHTML = stepHead(2, !!st.day, '¿Qué día?', st.day ? esc(st.day.label) : '') + body;
-        c2.querySelectorAll('.day').forEach((b) => b.onclick = () => { st.day = st.days.find((d) => d.day === b.dataset.day); st.slot = null; loadSlots(); render(); });
+        c2.querySelectorAll('.cd.free').forEach((b) => b.onclick = () => {
+          const iso = b.dataset.day;
+          st.day = st.days.find((d) => d.day === iso); st.slot = null; loadSlots(); render();
+          c2.querySelector(`[data-day="${iso}"]`)?.focus({ preventScroll: true });
+          c3.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+        c2.querySelectorAll('.cal-nav').forEach((b) => b.onclick = () => {
+          const go = b.dataset.go;
+          st.month = moveMonth(st.month, +go); render();
+          (c2.querySelector(`.cal-nav[data-go="${go}"]:not(:disabled)`) || c2.querySelector('.cal-nav:not(:disabled)'))?.focus({ preventScroll: true });
+        });
       }
 
       // 3. Hora
@@ -396,7 +447,7 @@
     async function loadDays() {
       st.days = 'loading';
       const id = st.service.id;
-      try { const d = await rpc('web_agenda_days', { p_slug: slug, p_service_id: id }); if (st.service && st.service.id === id) st.days = d || []; }
+      try { const d = await rpc('web_agenda_days', { p_slug: slug, p_service_id: id }); if (st.service && st.service.id === id) { st.days = d || []; st.month = st.days.length ? st.days[0].day.slice(0, 7) : null; } }
       catch (e) { st.days = { error: e.message }; }
       render();
     }
@@ -404,7 +455,7 @@
     async function loadSlots() {
       st.slots = 'loading';
       const key = st.service.id + st.day.day;
-      try { const s = await rpc('web_agenda_slots', { p_slug: slug, p_service_id: st.service.id, p_day: st.day.day }); if (st.service && st.day && st.service.id + st.day.day === key) st.slots = s || []; }
+      try { const s = await rpc('web_agenda_slots', { p_slug: slug, p_service_id: st.service.id, p_day: st.day.day }); if (st.service && st.day && st.service.id + st.day.day === key) { st.slots = s || []; setTimeout(() => c3.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60); } }
       catch (e) { st.slots = { error: e.message }; }
       render();
     }
