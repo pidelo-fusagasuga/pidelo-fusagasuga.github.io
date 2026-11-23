@@ -48,6 +48,14 @@
   .svc .meta { color: var(--muted); font-size: 13px; }
   .svc .price { margin-left: auto; font-weight: 800; color: var(--navy); white-space: nowrap; }
 
+  .who { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 10px; margin-top: 14px; }
+  .pro { display: flex; align-items: center; gap: 10px; min-height: 56px; width: 100%; text-align: left; background: #fff; border: 2px solid var(--line);
+    border-radius: 14px; padding: 8px 10px; cursor: pointer; font-weight: 700; overflow-wrap: anywhere; }
+  .pro:hover, .pro:focus-visible { border-color: var(--orange); outline: none; }
+  .pro i { flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--navy); color: #fff; font-style: normal; font-weight: 800; display: grid; place-items: center; }
+  .pro.any { grid-column: 1 / -1; }
+  .pro small { display: block; color: var(--muted); font-weight: 500; font-size: 13px; }
+  .pro.any i { background: var(--orange-soft); color: #a34700; }
   .cal { margin-top: 14px; }
   .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
   .cal-head b { font-size: 17px; font-weight: 800; color: var(--navy); }
@@ -237,7 +245,7 @@
     const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Pidelo//Citas//ES', 'BEGIN:VEVENT',
       'UID:' + (b.token || Date.now()) + '@pidelo', 'DTSTAMP:' + f(new Date().toISOString()),
       'DTSTART:' + f(b.starts_at), 'DTEND:' + f(b.ends_at),
-      'SUMMARY:' + clean(b.service + ' en ' + b.merchant_name), 'LOCATION:' + clean(b.address),
+      'SUMMARY:' + clean(b.service + (b.professional ? ' con ' + b.professional : '') + ' en ' + b.merchant_name), 'LOCATION:' + clean(b.address),
       'BEGIN:VALARM', 'TRIGGER:-PT1H', 'ACTION:DISPLAY', 'DESCRIPTION:Tu cita es en 1 hora', 'END:VALARM',
       'END:VEVENT', 'END:VCALENDAR'];
     const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
@@ -272,13 +280,14 @@
           ? `<div class="done-icon warn">⏳</div><h2>¡Recibimos tu cita!</h2><p class="hint">${esc(b.merchant_name)} la revisa y te confirma.</p>`
           : `<div class="done-icon">✓</div><h2>¡Listo, ${esc(String(b.customer_name).split(' ')[0])}! Tu cita quedó agendada</h2>`)
       : `<h2>${esc(b.service)}</h2>${badge}`;
-    const wa = waLink(b.whatsapp, `Hola, tengo una cita de ${b.service} el ${b.day_label} a las ${b.time_label} (a nombre de ${b.customer_name}).`);
+    const wa = waLink(b.whatsapp, `Hola, tengo una cita de ${b.service}${b.professional ? ' con ' + b.professional : ''} el ${b.day_label} a las ${b.time_label} (a nombre de ${b.customer_name}).`);
 
     app.innerHTML = `
       <div class="card">
         <div class="center">${head}</div>
         <div class="summary">
           <div><span>✂️</span><span><b>${esc(b.service)}</b> · ${esc(money(b.price_cop))}</span></div>
+          ${b.professional ? `<div><span>🙋</span><span>Con ${esc(b.professional)}</span></div>` : ''}
           <div><span>📅</span><span>${esc(b.day_label)}</span></div>
           <div><span>⏰</span><span>${esc(b.time_label)}</span></div>
           <div><span>📍</span><span>${esc(b.merchant_name)}${b.address ? ', ' + esc(b.address) : ''}</span></div>
@@ -338,7 +347,7 @@
       return;
     }
 
-    const st = { service: null, day: null, slot: null, days: [], slots: [], month: null };
+    const st = { service: null, who: null, day: null, slot: null, days: [], slots: [], month: null };
 
     // Cita guardada en este celular para este negocio.
     let banner = '';
@@ -354,11 +363,20 @@
 
     app.innerHTML = `${banner}
       <div class="card" id="c1"></div>
+      <div class="card hidden" id="cw"></div>
       <div class="card" id="c2"></div>
       <div class="card" id="c3"></div>
       <div class="card" id="c4"></div>`;
-    const c1 = document.getElementById('c1'), c2 = document.getElementById('c2'),
+    const c1 = document.getElementById('c1'), cw = document.getElementById('cw'), c2 = document.getElementById('c2'),
       c3 = document.getElementById('c3'), c4 = document.getElementById('c4');
+
+    // Con una sola persona (o ninguna) no hay nada que elegir.
+    const pros = info.professionals || [];
+    const askWho = pros.length > 1;
+    const ANY = { id: null, name: 'Cualquiera' };
+    const extra = askWho ? 1 : 0;
+    const whoId = () => (askWho && st.who ? st.who.id : null);
+    const ready = () => st.service && (!askWho || st.who);
 
     function stepHead(n, done, title, sel, onChange) {
       return `<div class="step"><span class="n ${done ? 'ok' : ''}">${done ? '✓' : n}</span>${title}${done && onChange ? '<button class="change" data-change>Cambiar</button>' : ''}</div>${sel ? `<div class="sel">${sel}</div>` : ''}`;
@@ -369,21 +387,35 @@
       if (!st.service) {
         c1.innerHTML = stepHead(1, false, '¿Qué te vas a hacer?') + `<div class="services">${info.services.map((s, i) => `
           <button class="svc" data-i="${i}"><div><div class="name">${esc(s.name)}</div><div class="meta">${mins(s.duration_minutes)}</div></div><div class="price">${esc(money(s.price_cop))}</div></button>`).join('')}</div>`;
-        c1.querySelectorAll('.svc').forEach((b) => b.onclick = () => { st.service = info.services[+b.dataset.i]; st.day = null; st.slot = null; loadDays(); render(); });
+        c1.querySelectorAll('.svc').forEach((b) => b.onclick = () => { st.service = info.services[+b.dataset.i]; st.day = null; st.slot = null; if (ready()) loadDays(); render(); });
       } else {
         c1.innerHTML = stepHead(1, true, 'Servicio', `${esc(st.service.name)} · ${mins(st.service.duration_minutes)} · ${esc(money(st.service.price_cop))}`, true);
         c1.querySelector('[data-change]').onclick = () => { st.service = null; st.day = null; st.slot = null; render(); };
       }
 
-      // 2. Día
-      c2.classList.toggle('hidden', !st.service);
-      if (st.service) {
+      // Con quién
+      cw.classList.toggle('hidden', !askWho || !st.service);
+      if (askWho && st.service) {
+        if (!st.who) {
+          cw.innerHTML = stepHead(2, false, '¿Con quién?') + `<div class="who">
+            <button class="pro any" data-w="-1"><i>★</i><span>Cualquiera<small>La persona que esté libre</small></span></button>${pros.map((x, i) => `
+            <button class="pro" data-w="${i}"><i>${esc(x.name.trim().charAt(0).toUpperCase())}</i><span>${esc(x.name)}</span></button>`).join('')}</div>`;
+          cw.querySelectorAll('.pro').forEach((b) => b.onclick = () => { st.who = pros[+b.dataset.w] || ANY; st.day = null; st.slot = null; loadDays(); render(); });
+        } else {
+          cw.innerHTML = stepHead(2, true, 'Con quién', esc(st.who.id ? st.who.name : 'Cualquiera que esté libre'), true);
+          cw.querySelector('[data-change]').onclick = () => { st.who = null; st.day = null; st.slot = null; render(); };
+        }
+      }
+
+      // Día
+      c2.classList.toggle('hidden', !ready());
+      if (ready()) {
         let body;
         if (st.days === 'loading') body = '<div class="loading"><span class="spin"></span>Buscando días libres…</div>';
         else if (st.days && st.days.error) body = `<div class="err">${esc(st.days.error)}</div>`;
         else if (!st.days.length) body = `<p class="empty">No hay días libres para este servicio en las próximas semanas. Escríbele al negocio.</p>`;
         else body = calendarHtml(st.days, st.month, st.day && st.day.day);
-        c2.innerHTML = stepHead(2, !!st.day, '¿Qué día?', st.day ? esc(st.day.label) : '') + body;
+        c2.innerHTML = stepHead(2 + extra, !!st.day, '¿Qué día?', st.day ? esc(st.day.label) : '') + body;
         c2.querySelectorAll('.cd.free').forEach((b) => b.onclick = () => {
           const iso = b.dataset.day;
           st.day = st.days.find((d) => d.day === iso); st.slot = null; loadSlots(); render();
@@ -410,7 +442,7 @@
           body = Object.keys(PARTS).filter((p) => groups[p]).map((p) => `<div class="part">${PARTS[p]}</div><div class="slots">${groups[p].map((s) => `
             <button class="slot" data-at="${esc(s.at)}" aria-pressed="${st.slot && st.slot.at === s.at}">${esc(s.label)}</button>`).join('')}</div>`).join('');
         }
-        c3.innerHTML = stepHead(3, !!st.slot, '¿A qué hora?', st.slot ? esc(st.slot.label) : '') + body;
+        c3.innerHTML = stepHead(3 + extra, !!st.slot, '¿A qué hora?', st.slot ? esc(st.slot.label) : '') + body;
         c3.querySelectorAll('.slot').forEach((b) => b.onclick = () => { st.slot = st.slots.find((s) => s.at === b.dataset.at); render(); c4.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
       }
 
@@ -418,7 +450,7 @@
       c4.classList.toggle('hidden', !st.slot);
       if (st.slot && !c4.dataset.ready) {
         c4.dataset.ready = '1';
-        c4.innerHTML = `${stepHead(4, false, 'Tus datos')}
+        c4.innerHTML = `${stepHead(4 + extra, false, 'Tus datos')}
           <form id="f" novalidate>
             <label for="nm">Tu nombre</label>
             <input id="nm" name="nm" autocomplete="name" maxlength="80" required placeholder="Ej: Juan Pérez">
@@ -439,6 +471,7 @@
       if (st.slot) {
         document.getElementById('sum').innerHTML = `
           <div><span>✂️</span><span><b>${esc(st.service.name)}</b> · ${esc(money(st.service.price_cop))}</span></div>
+          ${askWho ? `<div><span>🙋</span><span>${st.who.id ? 'Con ' + esc(st.who.name) : 'Con quien esté libre'}</span></div>` : ''}
           <div><span>📅</span><span>${esc(st.day.label)}</span></div>
           <div><span>⏰</span><span>${esc(st.slot.label)}</span></div>`;
       }
@@ -446,17 +479,19 @@
 
     async function loadDays() {
       st.days = 'loading';
-      const id = st.service.id;
-      try { const d = await rpc('web_agenda_days', { p_slug: slug, p_service_id: id }); if (st.service && st.service.id === id) { st.days = d || []; st.month = st.days.length ? st.days[0].day.slice(0, 7) : null; } }
-      catch (e) { st.days = { error: e.message }; }
+      const key = st.service.id + whoId();
+      const now = () => ready() && st.service.id + whoId() === key;
+      try { const d = await rpc('web_agenda_days', { p_slug: slug, p_service_id: st.service.id, p_professional_id: whoId() }); if (now()) { st.days = d || []; st.month = st.days.length ? st.days[0].day.slice(0, 7) : null; } }
+      catch (e) { if (now()) st.days = { error: e.message }; }
       render();
     }
 
     async function loadSlots() {
       st.slots = 'loading';
-      const key = st.service.id + st.day.day;
-      try { const s = await rpc('web_agenda_slots', { p_slug: slug, p_service_id: st.service.id, p_day: st.day.day }); if (st.service && st.day && st.service.id + st.day.day === key) { st.slots = s || []; setTimeout(() => c3.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60); } }
-      catch (e) { st.slots = { error: e.message }; }
+      const key = st.service.id + whoId() + st.day.day;
+      const now = () => ready() && st.day && st.service.id + whoId() + st.day.day === key;
+      try { const s = await rpc('web_agenda_slots', { p_slug: slug, p_service_id: st.service.id, p_day: st.day.day, p_professional_id: whoId() }); if (now()) { st.slots = s || []; setTimeout(() => c3.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60); } }
+      catch (e) { if (now()) st.slots = { error: e.message }; }
       render();
     }
 
@@ -474,6 +509,7 @@
         const r = await rpc('web_agenda_book', {
           p_slug: slug, p_service_id: st.service.id, p_starts_at: st.slot.at, p_name: nm, p_phone: ph,
           p_notes: document.getElementById('nt').value.trim() || null, p_trap: document.getElementById('em').value || null,
+          p_professional_id: whoId(),
         });
         try { localStorage.setItem('pidelo_mis_datos', JSON.stringify({ nm, ph })); } catch (e) {}
         store.add({ token: r.token, slug });
