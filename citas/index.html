@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reserva tu cita · Pídelo</title>
+<meta name="description" content="Agenda tu cita en línea: elige el servicio, el día y la hora.">
+<meta name="theme-color" content="#021E45">
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #021e45; --navy-2: #06306a; --orange: #fe7602; --orange-soft: #fff1e6; --green: #0b7a38; --green-soft: #e6f7ed;
+    --ink: #0f1b2d; --muted: #5a6577; --line: #e4e8ef; --bg: #f4f6fa; --card: #fff; --red: #b42318; --red-soft: #fdecea;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { background: var(--bg); color: var(--ink); font: 16px/1.5 "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+  button { font: inherit; color: inherit; }
+  .hidden { display: none !important; }
+
+  header.top { background: var(--navy); color: #fff; padding: 22px 16px 64px; position: relative; overflow: hidden; }
+  header.top::after { content: ""; position: absolute; right: -120px; top: -120px; width: 320px; height: 320px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(254,118,2,.22), rgba(254,118,2,0) 70%); }
+  .wrap { max-width: 560px; margin: 0 auto; position: relative; z-index: 1; }
+  .kicker { color: var(--orange); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+  h1 { font-size: 28px; line-height: 1.15; font-weight: 800; margin-top: 6px; letter-spacing: -.5px; }
+  .addr { color: rgba(255,255,255,.78); font-size: 14px; margin-top: 6px; }
+
+  main { max-width: 560px; margin: -44px auto 0; padding: 0 16px 40px; position: relative; z-index: 2; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px; box-shadow: 0 10px 30px rgba(2,30,69,.08); }
+  .card + .card { margin-top: 14px; }
+  .step { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; color: var(--navy); }
+  .step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 14px; display: grid; place-items: center; flex: none; }
+  .step .n.ok { background: var(--green); }
+  .hint { color: var(--muted); font-size: 14px; margin-top: 4px; }
+  .sel { margin-top: 2px; color: var(--muted); font-size: 14px; }
+  .change { background: none; border: 0; color: var(--orange); font-weight: 700; cursor: pointer; margin-left: auto; font-size: 14px; padding: 4px 0; }
+
+  .services { display: grid; gap: 10px; margin-top: 14px; }
+  .svc { display: flex; align-items: center; gap: 12px; text-align: left; width: 100%; background: #fff; border: 2px solid var(--line);
+    border-radius: 14px; padding: 12px 14px; cursor: pointer; transition: border-color .15s; }
+  .svc:hover, .svc:focus-visible { border-color: var(--orange); outline: none; }
+  .svc .name { font-weight: 700; }
+  .svc .meta { color: var(--muted); font-size: 13px; }
+  .svc .price { margin-left: auto; font-weight: 800; color: var(--navy); white-space: nowrap; }
+
+  .days { display: flex; gap: 8px; overflow-x: auto; margin: 14px -18px 0; padding: 2px 18px 6px; scroll-snap-type: x proximity; scroll-padding-inline: 18px; }
+  .day { flex: none; scroll-snap-align: start; width: 66px; border: 2px solid var(--line); background: #fff; border-radius: 14px; padding: 8px 0; cursor: pointer; text-align: center; }
+  .day .wd { font-size: 12px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+  .day .dn { font-size: 22px; font-weight: 800; color: var(--navy); line-height: 1.1; }
+  .day .mo { font-size: 12px; color: var(--muted); }
+  .day[aria-pressed="true"] { border-color: var(--orange); background: var(--orange-soft); }
+
+  .part { font-size: 13px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin: 14px 0 8px; }
+  .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+  .slot { border: 2px solid var(--line); background: #fff; border-radius: 12px; padding: 9px 4px; font-weight: 700; cursor: pointer; font-size: 15px; }
+  .slot[aria-pressed="true"] { border-color: var(--orange); background: var(--orange-soft); }
+  .day:focus-visible, .slot:focus-visible { outline: 3px solid rgba(254,118,2,.4); outline-offset: 1px; }
+
+  label { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
+  label small { color: var(--muted); font-weight: 500; }
+  input, textarea { width: 100%; border: 2px solid var(--line); border-radius: 12px; padding: 12px 14px; font: inherit; font-size: 16px; background: #fff; color: var(--ink); }
+  input:focus, textarea:focus { border-color: var(--orange); outline: none; }
+  textarea { resize: vertical; min-height: 70px; }
+  .legal { color: var(--muted); font-size: 12.5px; line-height: 1.45; margin-top: 12px; text-align: center; }
+  .legal a { color: inherit; }
+  .trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 52px; border: 0; border-radius: 999px;
+    background: var(--orange); color: #fff; font-weight: 800; font-size: 16px; cursor: pointer; margin-top: 16px; text-decoration: none; }
+  .btn:disabled { opacity: .6; cursor: default; }
+  .btn.ghost { background: #fff; color: var(--navy); border: 2px solid var(--line); }
+  .btn.green { background: #128c4a; }
+  .btn.danger { background: #fff; color: var(--red); border: 2px solid #f3c4bf; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .row2 .btn { margin-top: 10px; font-size: 14px; min-height: 48px; }
+
+  .summary { background: var(--bg); border-radius: 14px; padding: 12px 14px; margin-top: 14px; font-size: 15px; }
+  .summary div { display: flex; gap: 10px; padding: 3px 0; }
+  .summary span:first-child { width: 22px; flex: none; text-align: center; }
+  .err { background: var(--red-soft); color: var(--red); border-radius: 12px; padding: 10px 14px; font-size: 14px; font-weight: 600; margin-top: 12px; }
+  .note { background: var(--orange-soft); color: #7a3b00; border-radius: 12px; padding: 10px 14px; font-size: 14px; margin-top: 12px; }
+  .empty { color: var(--muted); font-size: 14px; margin-top: 12px; }
+  .loading { color: var(--muted); font-size: 14px; margin-top: 12px; display: flex; align-items: center; gap: 8px; }
+  .spin { width: 16px; height: 16px; border: 2px solid var(--line); border-top-color: var(--orange); border-radius: 50%; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .done-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--green-soft); color: var(--green); display: grid; place-items: center; font-size: 34px; margin: 4px auto 10px; }
+  .done-icon.warn { background: var(--orange-soft); color: var(--orange); }
+  .done-icon.off { background: var(--red-soft); color: var(--red); }
+  .center { text-align: center; }
+  h2 { font-size: 22px; font-weight: 800; color: var(--navy); line-height: 1.2; }
+  .badge { display: inline-block; border-radius: 999px; padding: 3px 10px; font-size: 12px; font-weight: 800; margin-top: 8px; }
+  .badge.ok { background: var(--green-soft); color: var(--green); }
+  .badge.wait { background: var(--orange-soft); color: #a34700; }
+  .badge.off { background: var(--red-soft); color: var(--red); }
+  .confirm-box { border: 2px solid #f3c4bf; border-radius: 14px; padding: 12px 14px; margin-top: 14px; }
+  .banner { display: flex; gap: 12px; align-items: center; background: var(--green-soft); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; font-size: 14px; }
+  .banner b { color: var(--green); }
+  .banner a { margin-left: auto; color: var(--green); font-weight: 800; white-space: nowrap; }
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 8px 16px 32px; }
+  footer img { height: 18px; vertical-align: -4px; margin-left: 4px; }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="kicker" id="kicker">Reserva tu cita</div>
+    <h1 id="title">Cargando…</h1>
+    <div class="addr" id="addr"></div>
+  </div>
+</header>
+
+<main id="app">
+  <div class="card"><div class="loading"><span class="spin"></span>Cargando la agenda…</div></div>
+</main>
+
+<footer>Agenda en línea hecha con <a href="../" target="_blank" rel="noopener">Pídelo</a></footer>
+
+<script>
+(() => {
+  'use strict';
+  const API = 'https://resyzmxhmpjpkpazmxtc.supabase.co/rest/v1/rpc/';
+  const KEY = 'sb_publishable_Aumffutfaia2UZLdpkni1w_bgi9RBMa';
+  const STORE = 'pidelo_mis_citas';
+  const WD = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  const MO = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  const PARTS = { manana: 'Mañana', tarde: 'Tarde', noche: 'Noche' };
+
+  const app = document.getElementById('app');
+  const params = new URLSearchParams(location.search);
+  const slug = (params.get('n') || '').trim().toLowerCase();
+  const tokenParam = (params.get('cita') || '').trim();
+
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const money = (n) => (!n ? 'Precio a convenir' : '$' + Number(n).toLocaleString('es-CO'));
+  const mins = (n) => (n >= 60 ? (Math.floor(n / 60) + ' h' + (n % 60 ? ' ' + (n % 60) + ' min' : '')) : n + ' min');
+
+  async function rpc(fn, body) {
+    let res;
+    try {
+      res = await fetch(API + fn, {
+        method: 'POST',
+        headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+    } catch (e) {
+      throw new Error('No hay conexión. Revisa tu internet e intenta de nuevo.');
+    }
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      const msg = data && data.message && data.code === '22023' ? data.message
+        : data && data.code === '23P01' ? 'Esa hora se acaba de ocupar. Elige otra, por favor.'
+        : 'Algo salió mal. Intenta de nuevo en un momento.';
+      throw new Error(msg);
+    }
+    return data;
+  }
+
+  const store = {
+    all() { try { return JSON.parse(localStorage.getItem(STORE) || '[]'); } catch (e) { return []; } },
+    add(item) { try { const l = store.all().filter((x) => x.token !== item.token); l.unshift(item); localStorage.setItem(STORE, JSON.stringify(l.slice(0, 10))); } catch (e) {} },
+  };
+
+  function setHeader(kicker, title, addr) {
+    document.getElementById('kicker').textContent = kicker;
+    document.getElementById('title').textContent = title;
+    document.getElementById('addr').textContent = addr || '';
+    document.title = title + ' · Pídelo';
+  }
+
+  function showMessage(icon, cls, title, text) {
+    app.innerHTML = `<div class="card center"><div class="done-icon ${cls}">${icon}</div><h2>${esc(title)}</h2><p class="hint">${esc(text)}</p></div>`;
+  }
+
+  function dayChip(iso) {
+    const [y, m, d] = iso.split('-').map(Number);
+    const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+    return { wd: WD[wd], dn: d, mo: MO[m - 1] };
+  }
+
+  function waLink(phone, text) {
+    const digits = String(phone || '').replace(/\D/g, '');
+    return digits ? `https://wa.me/${digits}?text=${encodeURIComponent(text)}` : '';
+  }
+
+  function icsFile(b) {
+    const f = (iso) => new Date(iso).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    const clean = (s) => String(s || '').replace(/[,;\\]/g, ' ');
+    const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Pidelo//Citas//ES', 'BEGIN:VEVENT',
+      'UID:' + (b.token || Date.now()) + '@pidelo', 'DTSTAMP:' + f(new Date().toISOString()),
+      'DTSTART:' + f(b.starts_at), 'DTEND:' + f(b.ends_at),
+      'SUMMARY:' + clean(b.service + ' en ' + b.merchant_name), 'LOCATION:' + clean(b.address),
+      'BEGIN:VALARM', 'TRIGGER:-PT1H', 'ACTION:DISPLAY', 'DESCRIPTION:Tu cita es en 1 hora', 'END:VALARM',
+      'END:VEVENT', 'END:VCALENDAR'];
+    const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'mi-cita.ics';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+
+  // ---------------- Ver o cancelar una cita ----------------
+  async function showBooking(token, justBooked) {
+    let b;
+    try {
+      b = await rpc('web_agenda_booking', { p_token: token });
+    } catch (e) {
+      showMessage('!', 'off', 'No pudimos cargar tu cita', e.message);
+      return;
+    }
+    if (!b) { showMessage('?', 'off', 'No encontramos esta cita', 'Revisa que el enlace esté completo.'); return; }
+    b.token = token;
+    setHeader('Tu cita', b.merchant_name, b.address);
+
+    const manageUrl = location.origin + location.pathname + '?cita=' + token;
+    const active = b.status === 'confirmed' || b.status === 'pending';
+    const badge = b.status === 'confirmed' ? '<span class="badge ok">Confirmada</span>'
+      : b.status === 'pending' ? '<span class="badge wait">Por confirmar</span>'
+      : b.status === 'cancelled' ? '<span class="badge off">Cancelada</span>'
+      : b.status === 'completed' ? '<span class="badge ok">Cumplida</span>' : '<span class="badge off">No asististe</span>';
+    const head = justBooked
+      ? (b.status === 'pending'
+          ? `<div class="done-icon warn">⏳</div><h2>¡Recibimos tu cita!</h2><p class="hint">${esc(b.merchant_name)} la revisa y te confirma.</p>`
+          : `<div class="done-icon">✓</div><h2>¡Listo, ${esc(String(b.customer_name).split(' ')[0])}! Tu cita quedó agendada</h2>`)
+      : `<h2>${esc(b.service)}</h2>${badge}`;
+    const wa = waLink(b.whatsapp, `Hola, tengo una cita de ${b.service} el ${b.day_label} a las ${b.time_label} (a nombre de ${b.customer_name}).`);
+
+    app.innerHTML = `
+      <div class="card">
+        <div class="center">${head}</div>
+        <div class="summary">
+          <div><span>✂️</span><span><b>${esc(b.service)}</b> · ${esc(money(b.price_cop))}</span></div>
+          <div><span>📅</span><span>${esc(b.day_label)}</span></div>
+          <div><span>⏰</span><span>${esc(b.time_label)}</span></div>
+          <div><span>📍</span><span>${esc(b.merchant_name)}${b.address ? ', ' + esc(b.address) : ''}</span></div>
+        </div>
+        ${active ? `
+        <div class="row2">
+          <button class="btn ghost" id="ics">📆 A mi calendario</button>
+          <button class="btn ghost" id="copy">🔗 Copiar enlace</button>
+        </div>
+        <p class="hint" style="margin-top:10px">Guarda el enlace de tu cita: con él la puedes ver o cancelar.</p>` : ''}
+        ${wa ? `<a class="btn green" href="${esc(wa)}" target="_blank" rel="noopener">Escribir al negocio por WhatsApp</a>` : ''}
+        ${b.can_cancel ? `<button class="btn danger" id="cancel">Cancelar mi cita</button>
+        <div class="confirm-box hidden" id="confirm">
+          <b>¿Seguro que quieres cancelarla?</b>
+          <p class="hint">El horario queda libre para otra persona.</p>
+          <div class="row2"><button class="btn ghost" id="no">No, mantenerla</button><button class="btn" id="yes" style="background:var(--red)">Sí, cancelar</button></div>
+        </div>` : ''}
+        <div id="msg"></div>
+        ${b.slug ? `<a class="btn ghost" href="?n=${encodeURIComponent(b.slug)}">Agendar otra cita</a>` : ''}
+      </div>`;
+
+    const $ = (id) => document.getElementById(id);
+    if ($('ics')) $('ics').onclick = () => icsFile(b);
+    if ($('copy')) $('copy').onclick = async () => {
+      try { await navigator.clipboard.writeText(manageUrl); $('copy').textContent = '✓ Copiado'; }
+      catch (e) { prompt('Copia este enlace:', manageUrl); }
+    };
+    if ($('cancel')) {
+      $('cancel').onclick = () => { $('confirm').classList.remove('hidden'); $('cancel').classList.add('hidden'); };
+      $('no').onclick = () => { $('confirm').classList.add('hidden'); $('cancel').classList.remove('hidden'); };
+      $('yes').onclick = async () => {
+        $('yes').disabled = true; $('yes').textContent = 'Cancelando…';
+        try { await rpc('web_agenda_cancel', { p_token: token }); showBooking(token, false); }
+        catch (e) { $('msg').innerHTML = `<div class="err">${esc(e.message)}</div>`; $('yes').disabled = false; $('yes').textContent = 'Sí, cancelar'; }
+      };
+    }
+  }
+
+  // ---------------- Agendar ----------------
+  async function startBooking() {
+    let info;
+    try {
+      info = slug ? await rpc('web_agenda_info', { p_slug: slug }) : null;
+    } catch (e) {
+      setHeader('Reserva tu cita', 'Sin conexión');
+      showMessage('!', 'off', 'No pudimos cargar la agenda', e.message);
+      return;
+    }
+    if (!info) {
+      setHeader('Reserva tu cita', 'Enlace no disponible');
+      showMessage('?', 'off', 'Este enlace de citas no está disponible', 'Puede que el negocio lo haya apagado. Pídele el enlace de nuevo o escríbele directamente.');
+      return;
+    }
+    setHeader('Reserva tu cita', info.name, info.address);
+    if (!info.services.length) {
+      showMessage('!', 'warn', 'Por ahora no hay servicios para agendar', 'Escríbele al negocio directamente.');
+      return;
+    }
+
+    const st = { service: null, day: null, slot: null, days: [], slots: [] };
+
+    // Cita guardada en este celular para este negocio.
+    let banner = '';
+    const mine = store.all().find((x) => x.slug === slug);
+    if (mine) {
+      try {
+        const b = await rpc('web_agenda_booking', { p_token: mine.token });
+        if (b && b.can_cancel) {
+          banner = `<div class="banner"><span>📅</span><span>Tienes una cita: <b>${esc(b.service)}</b>, ${esc(b.day_label.charAt(0).toLowerCase() + b.day_label.slice(1))} a las ${esc(b.time_label)}</span><a href="?cita=${encodeURIComponent(mine.token)}">Ver</a></div>`;
+        }
+      } catch (e) {}
+    }
+
+    app.innerHTML = `${banner}
+      <div class="card" id="c1"></div>
+      <div class="card" id="c2"></div>
+      <div class="card" id="c3"></div>
+      <div class="card" id="c4"></div>`;
+    const c1 = document.getElementById('c1'), c2 = document.getElementById('c2'),
+      c3 = document.getElementById('c3'), c4 = document.getElementById('c4');
+
+    function stepHead(n, done, title, sel, onChange) {
+      return `<div class="step"><span class="n ${done ? 'ok' : ''}">${done ? '✓' : n}</span>${title}${done && onChange ? '<button class="change" data-change>Cambiar</button>' : ''}</div>${sel ? `<div class="sel">${sel}</div>` : ''}`;
+    }
+
+    function render() {
+      // 1. Servicio
+      if (!st.service) {
+        c1.innerHTML = stepHead(1, false, '¿Qué te vas a hacer?') + `<div class="services">${info.services.map((s, i) => `
+          <button class="svc" data-i="${i}"><div><div class="name">${esc(s.name)}</div><div class="meta">${mins(s.duration_minutes)}</div></div><div class="price">${esc(money(s.price_cop))}</div></button>`).join('')}</div>`;
+        c1.querySelectorAll('.svc').forEach((b) => b.onclick = () => { st.service = info.services[+b.dataset.i]; st.day = null; st.slot = null; loadDays(); render(); });
+      } else {
+        c1.innerHTML = stepHead(1, true, 'Servicio', `${esc(st.service.name)} · ${mins(st.service.duration_minutes)} · ${esc(money(st.service.price_cop))}`, true);
+        c1.querySelector('[data-change]').onclick = () => { st.service = null; st.day = null; st.slot = null; render(); };
+      }
+
+      // 2. Día
+      c2.classList.toggle('hidden', !st.service);
+      if (st.service) {
+        let body;
+        if (st.days === 'loading') body = '<div class="loading"><span class="spin"></span>Buscando días libres…</div>';
+        else if (st.days && st.days.error) body = `<div class="err">${esc(st.days.error)}</div>`;
+        else if (!st.days.length) body = `<p class="empty">No hay días libres para este servicio en las próximas semanas. Escríbele al negocio.</p>`;
+        else body = `<div class="days">${st.days.map((d) => { const c = dayChip(d.day); return `
+          <button class="day" data-day="${d.day}" aria-pressed="${st.day && st.day.day === d.day}" title="${esc(d.label)}"><div class="wd">${c.wd}</div><div class="dn">${c.dn}</div><div class="mo">${c.mo}</div></button>`; }).join('')}</div>`;
+        c2.innerHTML = stepHead(2, !!st.day, '¿Qué día?', st.day ? esc(st.day.label) : '') + body;
+        c2.querySelectorAll('.day').forEach((b) => b.onclick = () => { st.day = st.days.find((d) => d.day === b.dataset.day); st.slot = null; loadSlots(); render(); });
+      }
+
+      // 3. Hora
+      c3.classList.toggle('hidden', !st.day);
+      if (st.day) {
+        let body;
+        if (st.slots === 'loading') body = '<div class="loading"><span class="spin"></span>Buscando horas libres…</div>';
+        else if (st.slots && st.slots.error) body = `<div class="err">${esc(st.slots.error)}</div>`;
+        else if (!st.slots.length) body = '<p class="empty">Ese día ya no quedan horas. Elige otro día.</p>';
+        else {
+          const groups = {};
+          st.slots.forEach((s) => (groups[s.part] = groups[s.part] || []).push(s));
+          body = Object.keys(PARTS).filter((p) => groups[p]).map((p) => `<div class="part">${PARTS[p]}</div><div class="slots">${groups[p].map((s) => `
+            <button class="slot" data-at="${esc(s.at)}" aria-pressed="${st.slot && st.slot.at === s.at}">${esc(s.label)}</button>`).join('')}</div>`).join('');
+        }
+        c3.innerHTML = stepHead(3, !!st.slot, '¿A qué hora?', st.slot ? esc(st.slot.label) : '') + body;
+        c3.querySelectorAll('.slot').forEach((b) => b.onclick = () => { st.slot = st.slots.find((s) => s.at === b.dataset.at); render(); c4.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      }
+
+      // 4. Datos
+      c4.classList.toggle('hidden', !st.slot);
+      if (st.slot && !c4.dataset.ready) {
+        c4.dataset.ready = '1';
+        c4.innerHTML = `${stepHead(4, false, 'Tus datos')}
+          <form id="f" novalidate>
+            <label for="nm">Tu nombre</label>
+            <input id="nm" name="nm" autocomplete="name" maxlength="80" required placeholder="Ej: Juan Pérez">
+            <label for="ph">Tu celular <small>(para que el negocio te pueda escribir)</small></label>
+            <input id="ph" name="ph" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="14" required placeholder="Ej: 300 123 4567">
+            <label for="nt">Nota para el negocio <small>(opcional)</small></label>
+            <textarea id="nt" name="nt" maxlength="200" placeholder="Ej: corte bajito a los lados"></textarea>
+            <div class="trap" aria-hidden="true"><label for="em">No llenar</label><input id="em" name="em" tabindex="-1" autocomplete="off"></div>
+            <div class="summary" id="sum"></div>
+            ${info.requires_approval ? '<p class="note">El negocio revisa cada cita y te la confirma.</p>' : ''}
+            <div id="ferr"></div>
+            <button class="btn" id="go" type="submit">Agendar mi cita</button>
+            <p class="legal">Al agendar autorizas a ${esc(info.name)} y a Pídelo a usar tu nombre y tu celular para gestionar tu cita. <a href="/privacidad.html" target="_blank" rel="noopener">Política de privacidad</a>.</p>
+          </form>`;
+        try { const last = JSON.parse(localStorage.getItem('pidelo_mis_datos') || '{}'); if (last.nm) document.getElementById('nm').value = last.nm; if (last.ph) document.getElementById('ph').value = last.ph; } catch (e) {}
+        document.getElementById('f').onsubmit = submit;
+      }
+      if (st.slot) {
+        document.getElementById('sum').innerHTML = `
+          <div><span>✂️</span><span><b>${esc(st.service.name)}</b> · ${esc(money(st.service.price_cop))}</span></div>
+          <div><span>📅</span><span>${esc(st.day.label)}</span></div>
+          <div><span>⏰</span><span>${esc(st.slot.label)}</span></div>`;
+      }
+    }
+
+    async function loadDays() {
+      st.days = 'loading';
+      const id = st.service.id;
+      try { const d = await rpc('web_agenda_days', { p_slug: slug, p_service_id: id }); if (st.service && st.service.id === id) st.days = d || []; }
+      catch (e) { st.days = { error: e.message }; }
+      render();
+    }
+
+    async function loadSlots() {
+      st.slots = 'loading';
+      const key = st.service.id + st.day.day;
+      try { const s = await rpc('web_agenda_slots', { p_slug: slug, p_service_id: st.service.id, p_day: st.day.day }); if (st.service && st.day && st.service.id + st.day.day === key) st.slots = s || []; }
+      catch (e) { st.slots = { error: e.message }; }
+      render();
+    }
+
+    async function submit(ev) {
+      ev.preventDefault();
+      const nm = document.getElementById('nm').value.trim();
+      const ph = document.getElementById('ph').value.replace(/\D/g, '');
+      const err = document.getElementById('ferr');
+      const go = document.getElementById('go');
+      err.innerHTML = '';
+      if (nm.length < 2) { err.innerHTML = '<div class="err">Escribe tu nombre.</div>'; return; }
+      if (!/^(57)?3\d{9}$/.test(ph)) { err.innerHTML = '<div class="err">Escribe tu celular de 10 dígitos, por ejemplo 3001234567.</div>'; return; }
+      go.disabled = true; go.textContent = 'Agendando…';
+      try {
+        const r = await rpc('web_agenda_book', {
+          p_slug: slug, p_service_id: st.service.id, p_starts_at: st.slot.at, p_name: nm, p_phone: ph,
+          p_notes: document.getElementById('nt').value.trim() || null, p_trap: document.getElementById('em').value || null,
+        });
+        try { localStorage.setItem('pidelo_mis_datos', JSON.stringify({ nm, ph })); } catch (e) {}
+        store.add({ token: r.token, slug });
+        history.replaceState(null, '', '?cita=' + r.token);
+        window.scrollTo({ top: 0 });
+        showBooking(r.token, true);
+      } catch (e) {
+        err.innerHTML = `<div class="err">${esc(e.message)}</div>`;
+        go.disabled = false; go.textContent = 'Agendar mi cita';
+        if (/ocup|disponible/i.test(e.message)) { st.slot = null; c4.dataset.ready = ''; loadSlots(); }
+      }
+    }
+
+    render();
+  }
+
+  if (/^[a-f0-9]{64}$/.test(tokenParam)) showBooking(tokenParam, false);
+  else startBooking();
+})();
+</script>
+</body>
+</html>
